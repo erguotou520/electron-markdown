@@ -1,0 +1,10 @@
+{
+  "name": "markdown",
+  "dependencies": {
+    "markdown": "^0.5.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-electron": "0.0.9"
+  }
+}
