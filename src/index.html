@@ -5,7 +5,7 @@
   <title>Markdown编辑器</title>
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
 </head>
-<link rel="stylesheet" href="./bower_components/github-markdown-css/github-markdown.css" />
+<link rel="stylesheet" href="github-markdown.css" />
 <style>
   * {
     box-sizing: border-box;
@@ -33,11 +33,32 @@
   <div id="html" class="markdown-body"></div>
 </body>
 <script type="text/javascript">
-  var markdown = require( "markdown" ).markdown,
+  var shell = require('shell'),
+    marked = require( "marked" ),
     $markdown = document.getElementById('markdown'),
     $html = document.getElementById('html');
-  $markdown.addEventListener('keyup', function () {
-    $html.innerHTML = markdown.toHTML($markdown.value);
+  marked.setOptions({
+    renderer: new marked.Renderer(),
+    gfm: true,
+    tables: true,
+    breaks: true,
+    pedantic: false,
+    sanitize: true,
+    smartLists: true,
+    smartypants: false
   });
+  $markdown.addEventListener('keyup', function () {
+    $html.innerHTML = marked($markdown.value);
+  });
+  document.body.addEventListener('click', function (e) {
+    var node = e.target;
+    if (node.nodeName.toLowerCase() === 'a') {
+      var href = node.getAttribute('href');
+      if (href && !shell.openExternal(href)) {
+        alert('不是一个合法的地址');
+      }
+      e.preventDefault();
+    }
+  })
 </script>
 </html>

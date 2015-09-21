@@ -1,5 +1,6 @@
-var gulp = require('gulp');
-var electron = require('gulp-electron');
+var gulp = require('gulp'),
+  electron = require('gulp-electron'),
+  clean = require('gulp-clean');;
 var packageJson = require('./src/package.json');
 
 gulp.task('electron', function() {
@@ -13,7 +14,7 @@ gulp.task('electron', function() {
         version: 'v0.33.0',
         packaging: true,
         platforms: ['darwin-x64'],
-        asar: true,
+        asar: false,
         platformResources: {
             darwin: {
                 CFBundleDisplayName: packageJson.name,
@@ -25,3 +26,12 @@ gulp.task('electron', function() {
     }))
     .pipe(gulp.dest(""));
 });
+
+gulp.task('clean', function () {
+  return gulp.src('./release', {read: false})
+    .pipe(clean({force: true}));
+});
+
+gulp.task('default', ['clean', 'electron'], function () {
+  console.info('build success');
+})
