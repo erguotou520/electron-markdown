@@ -11,9 +11,9 @@ gulp.task('electron', function() {
         packageJson: packageJson,
         release: './release',
         cache: './cache',
-        version: 'v0.33.0',
+        version: 'v0.33.1',
         packaging: true,
-        platforms: ['darwin-x64'],
+        platforms: ['win32-ia32'],
         asar: false,
         platformResources: {
             darwin: {
@@ -21,6 +21,11 @@ gulp.task('electron', function() {
                 CFBundleIdentifier: packageJson.name,
                 CFBundleName: packageJson.name,
                 CFBundleVersion: packageJson.version
+            },
+            win: {
+                "version-string": packageJson.version,
+                "file-version": packageJson.version,
+                "product-version": packageJson.version
             }
         }
     }))

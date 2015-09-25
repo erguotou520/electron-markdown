@@ -1,9 +1,11 @@
 {
   "name": "markdown",
   "dependencies": {
+    "electron": "^0.4.1",
     "marked": "^0.3.5"
   },
   "devDependencies": {
+    "electron-prebuilt": "^0.33.1",
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",
     "gulp-electron": "0.0.9"
