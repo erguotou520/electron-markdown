@@ -7,6 +7,8 @@ require('crash-reporter').start();
 // 保持一个对于 window 对象的全局引用，不然，当 JavaScript 被 GC，
 // window 会被自动地关闭
 var mainWindow = null;
+// 打开的窗口列表
+var openedWindows = {};
 
 // 当所有窗口被关闭了，退出。
 app.on('window-all-closed', function() {
@@ -17,11 +19,17 @@ app.on('window-all-closed', function() {
   }
 });
 
+// 打开的窗口的高度和宽度
+var windowHeihgt = 600, windowWidth = 900;
+
 // 当 Electron 完成了初始化并且准备创建浏览器窗口的时候
 // 这个方法就被调用
 app.on('ready', function() {
   // 创建浏览器窗口。
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow({width: windowWidth, height: windowHeihgt});
+
+  // 加入到打开的窗口列表中
+  openedWindows.push({mainWindow.id: mainWindow});
 
   // 加载应用的 index.html
   mainWindow.loadUrl('file://' + __dirname + '/index.html');
@@ -35,5 +43,6 @@ app.on('ready', function() {
     // 通常会把多个 window 对象存放在一个数组里面，
     // 但这次不是。
     mainWindow = null;
+    delete openedWindows[mainWindow.id];
   });
 });

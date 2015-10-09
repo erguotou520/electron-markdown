@@ -51,7 +51,8 @@
   <textarea id="markdown"></textarea>
   <div id="html" class="markdown-body"></div>
 </body>
-<script type="text/javascript">
+<script>require('./menu.js')</script>
+<script>
   var shell = require('shell'),
     marked = require( "marked" ),
     $markdown = document.getElementById('markdown'),
