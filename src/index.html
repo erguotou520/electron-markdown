@@ -11,6 +11,12 @@
   <textarea id="markdown"></textarea>
   <div id="html" class="markdown-body"></div>
 </body>
-<script>require('./editor.js')</script>
-<script>require('./menu.js')</script>
+<script>
+  var editor = require('./editor.js'),
+    menu = require('./menu.js');
+  window.markdown = {
+    editor: editor,
+    menu: menu
+  }
+</script>
 </html>

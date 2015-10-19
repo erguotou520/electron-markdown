@@ -1,7 +1,7 @@
 var remote = require('remote'),
+  ipc = require('ipc'),
   Menu = remote.require('menu'),
-  dialog = remote.require('dialog'),
-  ipc = require('ipc')
+  dialog = remote.require('dialog')
 
 var template = [
   {
@@ -12,7 +12,7 @@ var template = [
         accelerator: 'CmdOrCtrl+O',
         click: function () {
           var files = dialog.showOpenDialog({ properties: [ 'openFile', 'multiSelections' ]})
-          ipc.send('markdown.open.files', files);
+          window.markdown.editor.showMultiFile(files)
         }
       }
     ]
@@ -123,7 +123,7 @@ var template = [
 ];
 
 if (process.platform == 'darwin') {
-  var name = require('app').getName();
+  var name = require('../package.json').name;
   template.unshift({
     label: name,
     submenu: [
@@ -162,7 +162,9 @@ if (process.platform == 'darwin') {
       {
         label: 'Quit',
         accelerator: 'Command+Q',
-        click: function() { app.quit(); }
+        click: function() {
+          ipc.send('app.close')
+        }
       },
     ]
   });
