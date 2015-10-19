@@ -1,0 +1,39 @@
+* {
+    box-sizing: border-box;
+  }
+::-webkit-scrollbar-track-piece{
+  background-color:#fff;
+}
+::-webkit-scrollbar{
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb{
+  height:50px;
+  background-color:#999;
+  -webkit-border-radius:4px;
+  border: 2px solid #fff;
+}
+::-webkit-scrollbar-thumb:hover{
+  height:50px;
+  background-color:#666;
+  -webkit-border-radius:4px;
+}
+body {
+  margin: 0;
+}
+#markdown,#html {
+  float: left;
+  width: 50%;
+  height: 100vh;
+  padding: 15px;
+  border: 0;
+  font-size: 14px;
+  background: none;
+  resize: none;
+  outline: none !important;
+  overflow: auto;
+}
+#markdown {
+  border-right: 1px solid #f0f0f0;
+}

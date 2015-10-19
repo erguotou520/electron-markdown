@@ -29,7 +29,7 @@ app.on('ready', function() {
   mainWindow = new BrowserWindow({width: windowWidth, height: windowHeihgt});
 
   // 加入到打开的窗口列表中
-  openedWindows.push({mainWindow.id: mainWindow});
+  openedWindows[mainWindow.id] = mainWindow;
 
   // 加载应用的 index.html
   mainWindow.loadUrl('file://' + __dirname + '/index.html');

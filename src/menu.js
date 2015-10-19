@@ -1,7 +1,22 @@
-var remote = require('remote');
-var Menu = remote.require('menu');
+var remote = require('remote'),
+  Menu = remote.require('menu'),
+  dialog = remote.require('dialog'),
+  ipc = require('ipc')
 
 var template = [
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'Open',
+        accelerator: 'CmdOrCtrl+O',
+        click: function () {
+          var files = dialog.showOpenDialog({ properties: [ 'openFile', 'multiSelections' ]})
+          ipc.send('markdown.open.files', files);
+        }
+      }
+    ]
+  },
   {
     label: 'Edit',
     submenu: [
