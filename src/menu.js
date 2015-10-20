@@ -1,18 +1,41 @@
 var remote = require('remote'),
   ipc = require('ipc'),
   Menu = remote.require('menu'),
-  dialog = remote.require('dialog')
+  editor = require('./editor')
 
 var template = [
   {
     label: 'File',
     submenu: [
       {
+        label: 'New',
+        accelerator: 'CmdOrCtrl+N',
+        click: function () {
+          ipc.send('open.new')
+        }
+      },
+      {
         label: 'Open',
         accelerator: 'CmdOrCtrl+O',
         click: function () {
-          var files = dialog.showOpenDialog({ properties: [ 'openFile', 'multiSelections' ]})
-          window.markdown.editor.showMultiFile(files)
+          editor.openFile()
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Save',
+        accelerator: 'CmdOrCtrl+S',
+        click: function () {
+          editor.saveFile()
+        }
+      },
+      {
+        label: 'SaveAs',
+        accelerator: 'CmdOrCtrl+Shift+S',
+        click: function () {
+          editor.saveFileAs()
         }
       }
     ]
