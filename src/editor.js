@@ -43,8 +43,12 @@ function init() {
   }
   $markdown.ondrop = function (e) {
     e.preventDefault()
-    var file = e.dataTransfer.files[0]
-    showFile(file.path)
+    var files = e.dataTransfer.files
+    var filePaths = []
+    for (var i = 0; i < files.length; i++) {
+      filePaths.push(files[i].path)
+    }
+    showFiles(filePaths)
     return false
   }
   // 获得焦点
@@ -55,30 +59,33 @@ function init() {
   }
 }
 
-// 打开.md文件
+// 展示.md文件
 function showFile(filePath) {
   fs.readFile(filePath, 'utf-8', function(err, data) {
     if (err) {alert('读取文件失败');return}
     $markdown.innerHTML = data
     $html.innerHTML = marked(data)
-    filePath = filePath
     hiddenPath = filePath
   })
+}
+
+// 展示多个.md文件
+function showFiles(filePaths) {
+  if (filePaths.length > 0) {
+    // 判断当前内容是否为空，如果为空，在当前窗口打开文件，如果不是，新开窗口
+    if (!$markdown.value) {
+      showFile(filePaths.shift())
+    }
+    if (filePaths.length > 0) {
+      ipc.send('show.files', filePaths)
+    }
+  }
 }
 
 // 打开1个或多个.md文件
 function openFile() {
   var opened = ipc.sendSync('open.file')
-  if (opened.length > 0) {
-    // 判断当前内容是否为空，如果为空，在当前窗口打开文件，如果不是，新开窗口
-    if (!$markdown.value) {
-      showFile(opened[0])
-      filePaths.shift()
-    }
-    if (opened.length > 0) {
-      ipc.send('show.files', opened)
-    }
-  }
+  showFiles(opened)
 }
 
 // 保存文件到某位置

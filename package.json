@@ -1,5 +1,5 @@
 {
-  "name": "markdown",
+  "name": "MyDown",
   "version": "0.1.0",
   "dependencies": {
     "electron": "^0.4.1",
