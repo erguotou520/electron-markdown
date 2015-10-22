@@ -4,6 +4,7 @@ var fs = require('fs'),
   marked = require( 'marked'),
   $markdown = document.getElementById('markdown'),
   $html = document.getElementById('html'),
+  windowId = null,
   hiddenPath = null
 
 // 初始化操作
@@ -57,6 +58,22 @@ function init() {
   if (window.__args__.filePath) {
     showFile(window.__args__.filePath)
   }
+  // 保存窗口的id
+  windowId = window.__args__.id
+}
+
+// 判断需要打开的文件是否已经打开，返回需要新窗口打开的路径集合
+function checkIfOpened(filePaths) {
+  var removeList = []
+  for (var i = 0; i < filePaths.length; i++) {
+    if (ipc.sendSync('check.opened', filePaths[i])) {
+      removeList.push(i)
+    }
+  }
+  for (var i = 0; i < removeList.length; i++) {
+    filePaths.splice(removeList[i], 1)
+  }
+  return filePaths
 }
 
 // 展示.md文件
@@ -66,12 +83,13 @@ function showFile(filePath) {
     $markdown.innerHTML = data
     $html.innerHTML = marked(data)
     hiddenPath = filePath
+    ipc.send('opened.file.path', windowId, filePath)
   })
 }
 
 // 展示多个.md文件
 function showFiles(filePaths) {
-  if (filePaths.length > 0) {
+  if (checkIfOpened(filePaths).length > 0) {
     // 判断当前内容是否为空，如果为空，在当前窗口打开文件，如果不是，新开窗口
     if (!$markdown.value) {
       showFile(filePaths.shift())
@@ -115,8 +133,7 @@ function saveFile() {
 
 module.exports = {
   init: init,
-  showFile: showFile,
   openFile: openFile,
-  saveFileAs: saveFileAs,
-  saveFile: saveFile
+  saveFile: saveFile,
+  saveFileAs: saveFileAs
 }

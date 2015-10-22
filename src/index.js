@@ -3,7 +3,9 @@ var app = require('app'),
   BrowserWindow = require('browser-window'),
   _window = require('electron-window'),
   ipc = require('ipc'),
-  file = require('./file');
+  file = require('./file'),
+  openedWindows = {},
+  openedPaths = {};
 
 // 给我们的服务器发送异常报告。
 require('crash-reporter').start();
@@ -34,15 +36,47 @@ function createWindow(filePath) {
   }
   var mdWindow = _window.createWindow(_option);
   mdWindow.showUrl(path.resolve(__dirname, './index.html'), {
-    filePath: filePath
-  });
-  return mdWindow;
+    filePath: filePath,
+    id: mdWindow.id
+  })
+  mdWindow.on('closed', function () {
+    console.log(1)
+    var sameWinId = null
+    for(var id in openedWindows) {
+      if (openedWindows[id] === mdWindow) {
+        sameWinId = id
+        delete openedWindows[id]
+        break
+      }
+    }
+    if (sameWinId) {
+      for (var path in openedPaths) {
+        if (openedPaths[path] === sameWinId) {
+          delete openedPaths[path]
+          break;
+        }
+      }
+    }
+  })
+  openedWindows[mdWindow.id] = mdWindow
+  return mdWindow
 }
 
 // 当 Electron 完成了初始化并且准备创建浏览器窗口的时候这个方法就被调用
 app.on('ready', function () {
   createWindow()
-});
+})
+
+// 判断是否已经打开了某文件
+ipc.on('check.opened', function (e, filePath) {
+  if (openedPaths[filePath]) {
+    // 已经打开过此文件
+    openedPaths[filePath].focus()
+    e.returnValue = true
+  } else {
+    e.returnValue = false
+  }
+})
 
 // 新建一个窗口
 ipc.on('open.new', function () {
@@ -52,6 +86,11 @@ ipc.on('open.new', function () {
 // 打开文件
 ipc.on('open.file', function (e) {
   e.returnValue = file.openFile()
+})
+
+// 打开了一个本地文件
+ipc.on('opened.file.path', function (e, windowId, filePath) {
+  openedPaths[filePath] = openedWindows[windowId]
 })
 
 // 另存为
