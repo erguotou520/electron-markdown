@@ -40,7 +40,6 @@ function createWindow(filePath) {
     id: mdWindow.id
   })
   mdWindow.on('closed', function () {
-    console.log(1)
     var sameWinId = null
     for(var id in openedWindows) {
       if (openedWindows[id] === mdWindow) {

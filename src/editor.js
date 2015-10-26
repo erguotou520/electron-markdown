@@ -2,10 +2,12 @@ var fs = require('fs'),
   shell = require('shell'),
   ipc = require('ipc'),
   marked = require( 'marked'),
+  fileWatcher = require('filewatcher')(),
   $markdown = document.getElementById('markdown'),
   $html = document.getElementById('html'),
   windowId = null,
-  hiddenPath = null
+  hiddenPath = null,
+  isSaved = false
 
 // 初始化操作
 function init() {
@@ -52,6 +54,17 @@ function init() {
     showFiles(filePaths)
     return false
   }
+  // 文件改动监听
+  fileWatcher.on('change', function (file, stat) {
+    if (!stat) {
+      console.log('deleted: %s', file)
+      // 文件删除后设置保存的文件路径为空
+      hiddenPath = null
+    } else {
+      showFile(file)
+      isSaved = true
+    }
+  })
   // 获得焦点
   $markdown.focus()
   // 是否传入文件路径
@@ -63,7 +76,7 @@ function init() {
 }
 
 // 判断需要打开的文件是否已经打开，返回需要新窗口打开的路径集合
-function checkIfOpened(filePaths) {
+function getUnopenedList(filePaths) {
   var removeList = []
   for (var i = 0; i < filePaths.length; i++) {
     if (ipc.sendSync('check.opened', filePaths[i])) {
@@ -80,16 +93,23 @@ function checkIfOpened(filePaths) {
 function showFile(filePath) {
   fs.readFile(filePath, 'utf-8', function(err, data) {
     if (err) {alert('读取文件失败');return}
-    $markdown.innerHTML = data
+    $markdown.value = data
     $html.innerHTML = marked(data)
+    // 保存旧路径
+    var oldPath = hiddenPath
     hiddenPath = filePath
     ipc.send('opened.file.path', windowId, filePath)
+    if (oldPath) {
+      // 如果有之前的文件就去除监听（似乎当前文件打开策略不会出现这种情况）
+      fileWatcher.remove(oldPath)
+    }
+    fileWatcher.add(filePath)
   })
 }
 
 // 展示多个.md文件
 function showFiles(filePaths) {
-  if (checkIfOpened(filePaths).length > 0) {
+  if (getUnopenedList(filePaths).length > 0) {
     // 判断当前内容是否为空，如果为空，在当前窗口打开文件，如果不是，新开窗口
     if (!$markdown.value) {
       showFile(filePaths.shift())
