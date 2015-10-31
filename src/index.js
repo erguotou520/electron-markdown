@@ -3,7 +3,8 @@ var app = require('app'),
   BrowserWindow = require('browser-window'),
   _window = require('electron-window'),
   ipc = require('ipc'),
-  file = require('./file'),
+  appinfo = require('../package.json'),
+  dialog = require('./dialog'),
   openedWindows = {},
   openedPaths = {};
 
@@ -24,7 +25,8 @@ var windowHeihgt = 600, windowWidth = 1024;
 
 // 创建一个窗口
 function createWindow(filePath) {
-  var _option = {width: windowWidth, height: windowHeihgt}
+  var _option = {width: windowWidth, height: windowHeihgt, title: appinfo.name}
+  // TOFOX:似乎会取不到当前焦点窗口
   var _focusWindow = BrowserWindow.getFocusedWindow();
   if (_focusWindow) {
     var _bounds = _focusWindow.getBounds();
@@ -84,17 +86,18 @@ ipc.on('open.new', function () {
 
 // 打开文件
 ipc.on('open.file', function (e) {
-  e.returnValue = file.openFile()
+  e.returnValue = dialog.openFile()
 })
 
 // 打开了一个本地文件
 ipc.on('opened.file.path', function (e, windowId, filePath) {
   openedPaths[filePath] = openedWindows[windowId]
+  openedWindows[windowId].setTitle(filePath)
 })
 
 // 另存为
 ipc.on('save.as', function (e) {
-  e.returnValue = file.saveFileAs()
+  e.returnValue = dialog.saveFileAs()
 })
 
 // 展示多个文件
