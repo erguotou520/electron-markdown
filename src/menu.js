@@ -1,7 +1,7 @@
-var remote = require('remote'),
-  ipc = require('ipc'),
-  Menu = remote.require('menu'),
-  editor = require('./editor')
+var ipc = require('ipc'),
+  Menu = require('menu'),
+  main = require('./main'),
+  dialog = require('./dialog')
 
 var template = [
   {
@@ -11,14 +11,14 @@ var template = [
         label: 'New',
         accelerator: 'CmdOrCtrl+N',
         click: function () {
-          ipc.send('open.new')
+          main.createWindow()
         }
       },
       {
         label: 'Open',
         accelerator: 'CmdOrCtrl+O',
         click: function () {
-          editor.openFile()
+          ipc.send('menu.opened', dialog.openFile())
         }
       },
       {
@@ -28,14 +28,14 @@ var template = [
         label: 'Save',
         accelerator: 'CmdOrCtrl+S',
         click: function () {
-          editor.saveFile()
+          ipc.send('menu.save')
         }
       },
       {
         label: 'SaveAs',
         accelerator: 'CmdOrCtrl+Shift+S',
         click: function () {
-          editor.saveFileAs()
+          ipc.send('menu.save.as', dialog.saveFileAs())
         }
       }
     ]
@@ -186,7 +186,7 @@ if (process.platform == 'darwin') {
         label: 'Quit',
         accelerator: 'Command+Q',
         click: function() {
-          ipc.send('app.close')
+          //require('app').quit()
         }
       },
     ]
@@ -203,5 +203,5 @@ if (process.platform == 'darwin') {
   );
 }
 
-menu = Menu.buildFromTemplate(template);
-Menu.setApplicationMenu(menu);
+menu = Menu.buildFromTemplate(template)
+Menu.setApplicationMenu(menu)
