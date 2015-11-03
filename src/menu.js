@@ -1,5 +1,6 @@
 var ipc = require('ipc'),
   Menu = require('menu'),
+  BrowserWindow = require(''),
   main = require('./main'),
   dialog = require('./dialog')
 
@@ -18,6 +19,7 @@ var template = [
         label: 'Open',
         accelerator: 'CmdOrCtrl+O',
         click: function () {
+          // BrowserWindow.getFocusedWindow().executeJavaScript()
           ipc.send('menu.opened', dialog.openFile())
         }
       },
