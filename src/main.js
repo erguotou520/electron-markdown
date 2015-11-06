@@ -37,7 +37,7 @@ function init() {
   // 展示多个文件
   ipc.on('editor.show.files', function (event, filePaths) {
     for (var i = 0; i < filePaths.length; i++) {
-      var win = createWindow(filePaths[i])
+      createWindow(filePaths[i])
     }
   })
 }
@@ -67,7 +67,6 @@ function createWindow(filePath) {
       delete openedPaths[__filePath]
     }
   })
-  mdWindow.openDevTools()
   return mdWindow
 }
 

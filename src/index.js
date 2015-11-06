@@ -16,6 +16,7 @@ app.on('window-all-closed', function() {
 // 当 Electron 完成了初始化并且准备创建浏览器窗口的时候这个方法就被调用
 app.on('ready', function() {
   main.createWindow()
+  require('./menu')
 })
 
 // 初始化main线程
