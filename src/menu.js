@@ -18,9 +18,15 @@ var template = [
       {
         label: 'Open',
         accelerator: 'CmdOrCtrl+O',
-        click: function () {
-          // BrowserWindow.getFocusedWindow().executeJavaScript()
-          ipc.send('menu.opened', dialog.openFile())
+        click: function(item, focusedWindow) {
+          if (focusedWindow) {
+            _curr.executeJavaScript('openFiles')
+          } else {
+            var _first = main.createWindow()
+            _first.webContents.once('did-finish-load', function () {
+              _curr.executeJavaScript('openFiles')
+            })
+          }
         }
       },
       {
