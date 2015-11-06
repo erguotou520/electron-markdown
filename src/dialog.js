@@ -1,5 +1,4 @@
-var ipc = require('ipc'),
-  dialog = require('dialog')
+var dialog = require('dialog');
 function openFile() {
   return dialog.showOpenDialog({
     filters:[{name: 'Markdown', extensions: ['md']}],
@@ -7,7 +6,7 @@ function openFile() {
   })
 }
 
-function saveFileAs(content) {
+function saveFileAs() {
   return dialog.showSaveDialog({
     filters:[{name: 'Markdown', extensions: ['md']}]
   })

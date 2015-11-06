@@ -57,7 +57,6 @@ function init() {
   // 文件改动监听
   fileWatcher.on('change', function (file, stat) {
     if (!stat) {
-      console.log('deleted: %s', file)
       // 文件删除后设置保存的文件路径为空
       hiddenPath = null
     } else {
@@ -73,13 +72,18 @@ function init() {
   }
   // 保存窗口的id
   windowId = window.__args__.id
+
+  // 事件监听
+  ipc.on('menu.save', saveFile)
+  ipc.on('menu.save.as', saveFileAs)
+  ipc.on('menu.opened', showFiles)
 }
 
 // 判断需要打开的文件是否已经打开，返回需要新窗口打开的路径集合
 function getUnopenedList(filePaths) {
   var removeList = []
   for (var i = 0; i < filePaths.length; i++) {
-    if (ipc.sendSync('check.opened', filePaths[i])) {
+    if (ipc.sendSync('editor.check.opened', filePaths[i])) {
       removeList.push(i)
     }
   }
@@ -98,12 +102,15 @@ function showFile(filePath) {
     // 保存旧路径
     var oldPath = hiddenPath
     hiddenPath = filePath
-    ipc.send('opened.file.path', windowId, filePath)
-    if (oldPath) {
-      // 如果有之前的文件就去除监听（似乎当前文件打开策略不会出现这种情况）
-      fileWatcher.remove(oldPath)
+    ipc.send('editor.opened.file', windowId, filePath)
+    if (oldPath !== filePath) {
+      // 只有旧文件路径和新文件路径不同时才更新监听
+      if (oldPath) {
+        // 如果有之前的文件就去除监听（似乎当前文件打开策略不会出现这种情况）
+        fileWatcher.remove(oldPath)
+      }
+      fileWatcher.add(filePath)
     }
-    fileWatcher.add(filePath)
   })
 }
 
@@ -115,15 +122,9 @@ function showFiles(filePaths) {
       showFile(filePaths.shift())
     }
     if (filePaths.length > 0) {
-      ipc.send('show.files', filePaths)
+      ipc.send('editor.show.files', filePaths)
     }
   }
-}
-
-// 打开1个或多个.md文件
-function openFile() {
-  var opened = ipc.sendSync('open.file')
-  showFiles(opened)
 }
 
 // 保存文件到某位置
@@ -135,8 +136,8 @@ function saveFileTo(newFilePath, content) {
 }
 
 // 另存为
-function saveFileAs() {
-  saveFileTo(ipc.sendSync('save.as'), $markdown.value)
+function saveFileAs(filePath) {
+  saveFileTo(filePath, $markdown.value)
 }
 
 // 保存文件
@@ -152,8 +153,5 @@ function saveFile() {
 // todo:再次获得焦点时之前打开的文件是否存在？是否被修改
 
 module.exports = {
-  init: init,
-  openFile: openFile,
-  saveFile: saveFile,
-  saveFileAs: saveFileAs
+  init: init
 }
