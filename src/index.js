@@ -15,9 +15,9 @@ require('crash-reporter').start();
 app.on('window-all-closed', function() {
   // 在 OS X 上，通常用户在明确地按下 Cmd + Q 之前
   // 应用会保持活动状态
-  if (process.platform != 'darwin') {
+  // if (process.platform != 'darwin') {
     app.quit();
-  }
+  //}
 });
 
 // 打开的窗口的高度和宽度
