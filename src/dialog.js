@@ -1,17 +1,17 @@
 var dialog = require('dialog');
-function openFile() {
+function openFiles() {
   return dialog.showOpenDialog({
     filters:[{name: 'Markdown', extensions: ['md']}],
     properties: ['openFile', 'multiSelections']
   })
 }
 
-function saveFileAs() {
+function getSavePath() {
   return dialog.showSaveDialog({
     filters:[{name: 'Markdown', extensions: ['md']}]
   })
 }
 module.exports = {
-  openFile: openFile,
-  saveFileAs: saveFileAs
+  openFiles: openFiles,
+  getSavePath: getSavePath
 }

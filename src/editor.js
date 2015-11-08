@@ -71,6 +71,11 @@ if (window.__args__.filePath) {
 // 保存窗口的id
 windowId = window.__args__.id
 
+// 事件监听
+ipc.on('menu.save', saveFile)
+ipc.on('menu.save.as', saveFileAs)
+ipc.on('menu.opened', showFiles)
+
 // 判断需要打开的文件是否已经打开，返回需要新窗口打开的路径集合
 function getUnopenedList(filePaths) {
   var removeList = []

@@ -33,6 +33,7 @@ body {
   resize: none;
   outline: none !important;
   overflow: auto;
+  -webkit-app-region: nodrag;
 }
 #markdown {
   background: #2c2c2c;

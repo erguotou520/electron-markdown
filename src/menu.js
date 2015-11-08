@@ -1,8 +1,22 @@
 var ipc = require('ipc'),
   Menu = require('menu'),
-  BrowserWindow = require(''),
   main = require('./main'),
   dialog = require('./dialog')
+
+// 向页面发送信息
+var openFiles = function (win) {
+  win.webContents.send('menu.opened', dialog.openFiles())
+}
+
+// 保存
+var saveFile = function (win) {
+  win.webContents.send('menu.save')
+}
+
+// 另存为
+var saveFileAs = function (win) {
+  win.webContents.send('menu.save.as', dialog.getSavePath())
+}
 
 var template = [
   {
@@ -20,11 +34,11 @@ var template = [
         accelerator: 'CmdOrCtrl+O',
         click: function(item, focusedWindow) {
           if (focusedWindow) {
-            _curr.executeJavaScript('openFiles')
+            openFiles(focusedWindow)
           } else {
             var _first = main.createWindow()
             _first.webContents.once('did-finish-load', function () {
-              _curr.executeJavaScript('openFiles')
+              openFiles(_first)
             })
           }
         }
@@ -35,15 +49,17 @@ var template = [
       {
         label: 'Save',
         accelerator: 'CmdOrCtrl+S',
-        click: function () {
-          ipc.send('menu.save')
+        click: function (item, focusedWindow) {
+          if (focusedWindow)
+            saveFile(focusedWindow)
         }
       },
       {
         label: 'SaveAs',
         accelerator: 'CmdOrCtrl+Shift+S',
-        click: function () {
-          ipc.send('menu.save.as', dialog.saveFileAs())
+        click: function (item, focusedWindow) {
+          if (focusedWindow)
+            saveFileAs()
         }
       }
     ]
